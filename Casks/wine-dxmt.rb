@@ -1,5 +1,5 @@
 cask "wine-dxmt" do
-  version "11.5.1"
+  version "11.5.2"
   sha256 "12e351336db4ab6eae560c1ba5d37f76b91be9ae32799d221345620c66124557"
 
   url "https://github.com/zzzz465/homebrew-wine-dxmt/releases/download/v#{version}/wine-dxmt-patches-#{version}.tar.xz"
@@ -53,12 +53,14 @@ cask "wine-dxmt" do
     end
     system "/bin/rm", "-rf", "/tmp/v0.74", "/tmp/dxmt-v0.74-builtin.tar.gz"
 
-    # --- 3. Our patches overlay (applied AFTER DXMT) ---
-    ohai "Applying patches..."
-    %w[x86_64-unix x86_64-windows].each do |arch|
-      Dir.glob("#{staged_path}/#{arch}/*").each do |f|
-        system "/bin/cp", "-f", f, "#{wine_dir}/lib/wine/#{arch}/"
-      end
+    # --- 3. Proton mfreadwrite patch (VGA/BGA video backgrounds) ---
+    # Only mfreadwrite.dll needs patching. Do NOT override winemac.so/drv or
+    # winemetal.so/dll — the Gcenx prebuilt already includes CX HACK 23950
+    # (window resize fix) and DXMT v0.74 provides the correct winemetal binaries.
+    ohai "Applying mfreadwrite patch..."
+    mfreadwrite = "#{staged_path}/x86_64-windows/mfreadwrite.dll"
+    if File.exist?(mfreadwrite)
+      system "/bin/cp", "-f", mfreadwrite, "#{wine_dir}/lib/wine/x86_64-windows/"
     end
 
     # --- 4. Symlink GLib/GStreamer libs to system x86_64 versions ---
