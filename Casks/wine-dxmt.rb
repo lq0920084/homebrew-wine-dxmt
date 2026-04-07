@@ -32,13 +32,13 @@ cask "wine-dxmt" do
 
     # --- 1. Wine Staging 11.5 from Gcenx ---
     unless File.exist?("#{wine_dir}/bin/wine")
-      ohai "Downloading Wine Staging 11.5..."
-      system "/usr/bin/curl", "-sLo", "/tmp/wine-staging-11.5.tar.xz",
-        "https://github.com/Gcenx/macOS_Wine_builds/releases/download/11.5/wine-staging-11.5-osx64.tar.xz"
-      system "/usr/bin/tar", "-xJf", "/tmp/wine-staging-11.5.tar.xz", "-C", "/tmp"
+      ohai "Downloading Wine Staging 11.6..."
+      system "/usr/bin/curl", "-sLo", "/tmp/wine-staging-11.6.tar.xz",
+        "https://github.com/Gcenx/macOS_Wine_builds/releases/download/11.5/wine-staging-11.6-osx64.tar.xz"
+      system "/usr/bin/tar", "-xJf", "/tmp/wine-staging-11.6.tar.xz", "-C", "/tmp"
       system "/bin/mkdir", "-p", wine_dir
       system "/bin/cp", "-R", "/tmp/Wine Staging.app/Contents/Resources/wine/", "#{wine_dir}/"
-      system "/bin/rm", "-rf", "/tmp/Wine Staging.app", "/tmp/wine-staging-11.5.tar.xz"
+      system "/bin/rm", "-rf", "/tmp/Wine Staging.app", "/tmp/wine-staging-11.6.tar.xz"
     end
 
     # --- 2. DXMT v0.74 overlay ---
