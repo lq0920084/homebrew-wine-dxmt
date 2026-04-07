@@ -34,7 +34,7 @@ cask "wine-dxmt" do
     unless File.exist?("#{wine_dir}/bin/wine")
       ohai "Downloading Wine Staging 11.6..."
       system "/usr/bin/curl", "-sLo", "/tmp/wine-staging-11.6.tar.xz",
-        "https://github.com/Gcenx/macOS_Wine_builds/releases/download/11.5/wine-staging-11.6-osx64.tar.xz"
+        "https://github.com/Gcenx/macOS_Wine_builds/releases/download/11.6/wine-staging-11.6-osx64.tar.xz"
       system "/usr/bin/tar", "-xJf", "/tmp/wine-staging-11.6.tar.xz", "-C", "/tmp"
       system "/bin/mkdir", "-p", wine_dir
       system "/bin/cp", "-R", "/tmp/Wine Staging.app/Contents/Resources/wine/", "#{wine_dir}/"
