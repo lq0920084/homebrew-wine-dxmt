@@ -123,7 +123,10 @@ cask "wine-dxmt" do
       fi
 
       export WINEPREFIX="$PREFIX"
-      export WINEESYNC=1
+      # msync (Mach semaphore sync) — macOS-native, avoids esync audio thread
+      # starvation that caused XAudio2 buffer underruns in UE5 games.
+      export WINEESYNC=0
+      export WINEMSYNC=1
       export WINE_DO_NOT_CREATE_DXGI_DEVICE_MANAGER=1
       export GST_PLUGIN_PATH="/usr/local/lib/gstreamer-1.0"
 
