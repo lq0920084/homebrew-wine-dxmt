@@ -81,13 +81,25 @@ cask "wine-dxmt" do
       end
     end
 
-    # --- 4. Remove GLib conflict dylibs ---
-    # Bundled GLib conflicts with brew x86_64 GStreamer.
-    unix_dir = "#{wine_dir}/lib/wine/x86_64-unix"
-    %w[
-      libglib-2.0.0.dylib libgobject-2.0.0.dylib libgmodule-2.0.0.dylib
+    # --- 4. Symlink bundled GLib/GStreamer dylibs to brew x86_64 versions ---
+    # winegstreamer.so resolves these via @rpath (LC_RPATH = @loader_path/ +
+    # @loader_path/../..), so both lib/ and lib/wine/x86_64-unix/ must point
+    # to brew. Deleting them breaks H.264/VP9 decoding (DJMax BGA video, etc).
+    # Bundled versions are also older and conflict with system GStreamer
+    # plugins (decodebin creation fail, GstCocoaApplicationDelegate duplicate).
+    gst_libs = %w[
+      libgstvideo-1.0.0.dylib libgstaudio-1.0.0.dylib libgstbase-1.0.0.dylib
+      libgsttag-1.0.0.dylib libgstreamer-1.0.0.dylib libgstpbutils-1.0.0.dylib
+      libgobject-2.0.0.dylib libglib-2.0.0.dylib libgmodule-2.0.0.dylib
       libgio-2.0.0.dylib libintl.8.dylib
-    ].each { |lib| File.delete("#{unix_dir}/#{lib}") if File.exist?("#{unix_dir}/#{lib}") }
+    ]
+    ["#{wine_dir}/lib", "#{wine_dir}/lib/wine/x86_64-unix"].each do |dir|
+      gst_libs.each do |lib|
+        target = "#{dir}/#{lib}"
+        File.delete(target) if File.exist?(target) || File.symlink?(target)
+        system "/bin/ln", "-sf", "/usr/local/lib/#{lib}", target
+      end
+    end
 
     # --- 5. x86_64 GStreamer ---
     unless File.exist?("/usr/local/lib/gstreamer-1.0")
